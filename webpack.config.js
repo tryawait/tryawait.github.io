@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const Markdown = require('./markdown')
 
 module.exports = {
   entry: [
@@ -28,6 +29,7 @@ module.exports = {
       template: './src/index.html',
       filename: 'index.html',
     }),
+    new Markdown(),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
     })
