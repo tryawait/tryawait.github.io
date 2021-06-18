@@ -3,8 +3,8 @@ import swift from 'highlight.js/lib/languages/swift'
 
 hljs.registerLanguage('swift', swift)
 
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('pre code').forEach((block) => {
-    hljs.highlightBlock(block)
+    hljs.highlightElement(block)
   })
 })
