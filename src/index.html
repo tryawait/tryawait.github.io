@@ -27,7 +27,7 @@
                     </a>
                 </div>
 
-                <div class="code-wrapper">
+                <div class="codes-wrapper">
 <pre><code class="language-swift">func fetchThumbnail(for id: String) async throws -> UIImage {
     let request = thumbnailURLRequest(for: id)
     let (data, response) = try await URLSession.shared.data(for: request)
@@ -73,71 +73,7 @@
 
             <h3 class="mt-8 md:mt-10 lg:mt-12 text-2xl">Notes</h3>
 
-            <div class="notes">
-                <div class="notes__content">
-                    <p>Calling synchronous function blocks your thread.</p>
-                    <p>Asynchronous function unblocks your thread. Asynchronous function uses completion handler or delegate callback to notify the result.</p>
-                    <p>Now you can mark a function async and just return a result.</p>
-                    <p>You can also throw an error in an async function.</p>
-                    <p>Async/await in Swift makes code safer, shorter, and makes it better reflect your intent.</p>
-                </div>
-                <div class="code-wrapper">
-<pre><code class="language-swift">func fetchThumbnail(for id: String) async throws -> UIImage {
-    let request = thumbnailURLRequest(for: id)
-    let (data, response) = try await URLSession.shared.data(for: request)
-    guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badID }
-    let maybeImage = UIImage(data: data)
-    guard let thumbnail = await maybeImage?.thumbnail else { throw FetchError.badImage }
-    return thumbnail
-}</code></pre>
-                </div>
-            </div>
-
-            <div class="notes">
-                <div class="notes__content">
-                    <p>Properties can be async too, so can initializers.</p>
-                    <p>The property must have an explicit getter.</p>
-                    <p>The property has no setter, that means only read-only property can be async.</p>
-                </div>
-                <div class="code-wrapper">
-<pre><code class="language-swift">extension UIImage {
-    var thumbnail: UIImage? {
-        get async {
-            let size = CGSize(width: 40, height: 40)
-            return await self.byPreparingThumbnail(ofSize: size)
-        }
-    }
-}</code></pre>
-                </div>
-            </div>
-
-            <div class="notes">
-                <div class="notes__content">
-                    <p>Await works in for loops to iterate over async sequences.</p>
-                    <p>An async sequence vends its elements asynchronously.</p>
-                    <p><a href="#meet_asyncsequence">Learn more about AsyncSequence</a>.</p>
-                </div>
-                <div class="code-wrapper">
-<pre><code class="language-swift">for await id in staticImageIDsURL.lines {
-    let thumbnail = await fetchThumbnail(for: id)
-    collage.add(thumbnail)
-}
-let result = collage.draw()</code></pre>
-                </div>
-            </div>
-
-            <div class="notes">
-                <div class="notes__content">
-                    <blockquote>
-                        <p><code>async</code> enables a function to suspend.</p>
-                        <p><code>await</code> marks where an async function may suspend execution.</p>
-                        <p>Other work can happen during a suspension.</p>
-                        <p>Once an awaited async call completes, execution resumes after the <code>await</code>.</p>
-                    </blockquote>
-                </div>
-            </div>
-
-            <div class="notes text-secondary">To be continued...</div>
+            <div data-notes="meet_async_await_in_swift" class="notes text-secondary">To be continued...</div>
         </div>
     </section>
 
@@ -156,7 +92,7 @@ let result = collage.draw()</code></pre>
 
             <h3 class="mt-8 md:mt-10 lg:mt-12 text-2xl">Notes</h3>
 
-            <div class="notes text-secondary">To be continued...</div>
+            <div data-notes="meet_asyncsequence" class="notes text-secondary">To be continued...</div>
         </div>
     </section>
 
@@ -173,7 +109,7 @@ let result = collage.draw()</code></pre>
 
             <h3 class="mt-8 md:mt-10 lg:mt-12 text-2xl">Notes</h3>
 
-            <div class="notes text-secondary">To be continued...</div>
+            <div data-notes="use_async_await_with_urlsession" class="notes text-secondary">To be continued...</div>
         </div>
     </section>
 

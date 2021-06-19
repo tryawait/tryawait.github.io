@@ -1,4 +1,9 @@
+const fs = require('fs')
+const path = require('path')
+
 class Markdown {
+  notesFileNameReg = /(\d+)_notes.md/
+
   apply (compiler) {
     compiler.hooks.compilation.tap('Markdown', (compilation) => {
       const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -6,7 +11,7 @@ class Markdown {
 
       // console.log(hooks)
 
-      hooks.beforeEmit.tapAsync('Markdown', (data, callback) => {
+      hooks.afterTemplateExecution.tapAsync('Markdown', (data, callback) => {
         this.markdown(data, callback)
       })
     });
@@ -19,26 +24,66 @@ class Markdown {
 
     const md = require('markdown-it')()
 
-    const reg = /<\w+\s[^>]*data-notes=\"(.*?)\"*><\/\w+>/ig
-    while (reg.exec(data.html)) {
-      const notesName = RegExp.$1, match = RegExp.lastMatch
-      console.log(notesName, match)
-      data.html = data.html.replace(match, md.render('TEST  \n\n\
-    ```swift\n\
-    func fetchThumbnail(for id: String) async throws -> UIImage {\n\
-        let request = thumbnailURLRequest(for: id)\n\
-        let (data, response) = try await URLSession.shared.data(for: request)\n\
-        guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badID }\n\
-        let maybeImage = UIImage(data: data)\n\
-        guard let thumbnail = await maybeImage?.thumbnail else { throw FetchError.badImage }\n\
-        return thumbnail\n\
-    }\n\
-    ```'))
-    }
+    const reg = /<\w+\s[^>]*data-notes=\"(.*?)\"[^>].*>.*<\/\w+>/g
+    data.html = data.html.replace(reg, (match, notesName) => {
+      console.log(`Generate notes for \x1b[36m%s\x1b[0m`, notesName)
+      // console.log(match)
+
+      const notesPath = path.join(path.resolve(__dirname, './notes'), notesName)
+      
+      if (!fs.existsSync(notesPath)) {
+        console.log('\x1b[31m%s\x1b[0m', `No notes for ${notesName}`)
+        return match
+      }
+
+      const files = fs.readdirSync(notesPath)
+
+      let contents = []
+      files.forEach(fileName => {
+        console.log('\x1b[36m%s\x1b[0m', fileName)
+        
+        const notesMatch = this.notesFileNameReg.exec(fileName)
+        if (!notesMatch) {
+          return
+        }
+        
+        const notesMarkdown = this.readFile(path.join(notesPath, fileName))
+        const codesMarkdown = this.readFile(path.join(notesPath, `${notesMatch[1]}_codes.md`))
+
+        if (!notesMarkdown && !codesMarkdown) {
+          return
+        }
+
+        contents.push('<div class="notes">')
+
+        if (notesMarkdown) {
+          contents.push('<div class="notes__content">')
+          contents.push(md.render(notesMarkdown))
+          contents.push('</div>')
+        }
+
+        if (codesMarkdown) {
+          contents.push('<div class="codes-wrapper">')
+          contents.push(md.render(codesMarkdown))
+          contents.push('</div>')
+        }
+        
+        contents.push('</div>')
+      })
+
+      return contents.length > 0 ? contents.join('') : match
+    })
 
     callback(null, data)
   }
 
+  readFile (path) {
+    if (!fs.existsSync(path)) {
+      return null
+    }
+
+    return fs.readFileSync(path, { encoding: 'utf-8' })
+  }
 
 }
 
