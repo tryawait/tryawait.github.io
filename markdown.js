@@ -9,8 +9,6 @@ class Markdown {
       const HtmlWebpackPlugin = require('html-webpack-plugin')
       const hooks = HtmlWebpackPlugin.getHooks(compilation)
 
-      // console.log(hooks)
-
       hooks.afterTemplateExecution.tapAsync('Markdown', (data, callback) => {
         this.markdown(data, callback)
       })
@@ -49,7 +47,7 @@ class Markdown {
         if (!notesMatch) {
           return
         }
-        
+
         console.log('Notes markdown \x1b[36m%s\x1b[0m', fileName)
         const time = notesMatch[1]
         const notesMarkdown = this.readFile(path.join(notesPath, fileName))
