@@ -37,7 +37,7 @@ blockquote {
 }
 
 .notes {
-    @apply mt-6 md:mt-8 lg:mt-10 grid md:grid-cols-2;
+    @apply mt-3 md:mt-4 lg:mt-5 grid md:grid-cols-2;
 }
 
 .notes__content {
