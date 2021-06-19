@@ -36,25 +36,29 @@ class Markdown {
         return match
       }
 
-      const files = fs.readdirSync(notesPath)
+      const files = fs.readdirSync(notesPath).sort((a, b) => {
+        const aInt = Number(a.split('_')[0])
+        const bInt = Number(b.split('_')[0])
+
+        return aInt - bInt
+      })
 
       let contents = []
       files.forEach(fileName => {
-        console.log('\x1b[36m%s\x1b[0m', fileName)
-        
         const notesMatch = this.notesFileNameReg.exec(fileName)
         if (!notesMatch) {
           return
         }
-        
+        console.log('Notes markdown \x1b[36m%s\x1b[0m', fileName)
+        const time = notesMatch[1]
         const notesMarkdown = this.readFile(path.join(notesPath, fileName))
-        const codesMarkdown = this.readFile(path.join(notesPath, `${notesMatch[1]}_codes.md`))
+        const codesMarkdown = this.readFile(path.join(notesPath, `${time}_codes.md`))
 
         if (!notesMarkdown && !codesMarkdown) {
           return
         }
 
-        contents.push('<div class="notes">')
+        contents.push(`<div class="notes" data-time="${time}">`)
 
         if (notesMarkdown) {
           contents.push('<div class="notes__content">')
